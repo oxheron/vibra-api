@@ -1,5 +1,4 @@
-#ifndef FREQUENCY_H
-#define FREQUENCY_H
+#pragma once
 
 #include <cstdint>
 
@@ -32,4 +31,35 @@ private:
     std::uint32_t mSampleRate;
 };
 
-#endif // FREQUENCY_H
+#ifdef VIBRA_API_IMPL
+
+#include <cmath>
+
+FrequancyPeak::FrequancyPeak(std::uint32_t fft_pass_number, std::uint32_t peak_magnitude, std::uint32_t corrected_peak_frequency_bin, std::uint32_t sample_rate)
+    : mFFTPassNumber(fft_pass_number)
+    , mPeakMagnitude(peak_magnitude)
+    , mCorrectedPeakFrequencyBin(corrected_peak_frequency_bin)
+    , mSampleRate(sample_rate)
+{
+}
+
+FrequancyPeak::~FrequancyPeak()
+{
+}
+
+double FrequancyPeak::GetFrequencyHz() const
+{
+    return mCorrectedPeakFrequencyBin * ((double)mSampleRate / 2. / 1024. / 64.);
+}
+    
+double FrequancyPeak::GetAmplitudePCM() const
+{
+    return std::sqrt(std::exp((mPeakMagnitude - 6144) / 1477.3) * (1 << 17) / 2.) / 1024.;
+}
+
+double FrequancyPeak::GetSeconds() const
+{
+    return (double)mFFTPassNumber * 128. / (double)mSampleRate;
+}
+
+#endif

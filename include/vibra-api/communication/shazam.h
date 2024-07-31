@@ -1,4 +1,25 @@
-#include "shazam.h"
+#pragma once
+
+#include <string>
+
+// forward declaration
+class Signature;
+
+class Shazam 
+{
+    static constexpr char HOST[] = "https://amp.shazam.com/discovery/v5/fr/FR/android/-/tag/";
+
+public:
+    static std::string RequestMetadata(const Signature& signature);
+
+private:
+    static std::string getRequestContent(const Signature& signature);
+    static std::string getUserAgent();
+    static std::string getTimezone();
+};
+
+#ifdef VIBRA_API_IMPL
+
 #include "user_agents.h"
 #include "timezones.h"
 #include "../fingerprinting/utils/uuid4.h"
@@ -111,3 +132,5 @@ std::string Shazam::getTimezone()
     std::uniform_int_distribution<> dis_timezone(0, EUROPE_TIMEZONES_SIZE - 1);
     return EUROPE_TIMEZONES[dis_timezone(gen)];
 }
+
+#endif
